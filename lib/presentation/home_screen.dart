@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'movie_detail_screen.dart'; // Import the MovieDetailScreen
 
 const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -77,7 +78,7 @@ class HomeScreenState extends State<HomeScreen> {
                 itemCount: movies.length,
                 itemBuilder: (context, index) {
                   final movie = movies[index];
-                  return _buildMoviePoster(movie['poster_path']);
+                  return _buildMoviePoster(movie);
                 },
               ),
             ),
@@ -131,15 +132,25 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMoviePoster(String? posterPath) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: posterPath != null
-          ? Image.network(
-              'https://image.tmdb.org/t/p/w500$posterPath',
-              fit: BoxFit.cover,
-            )
-          : Container(color: Colors.grey),
+  Widget _buildMoviePoster(Map<String, dynamic> movie) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MovieDetailScreen(movieId: movie['id']),
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: movie['poster_path'] != null
+            ? Image.network(
+                'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                fit: BoxFit.cover,
+              )
+            : Container(color: Colors.grey),
+      ),
     );
   }
 }
