@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movie_app/presentation/home_screen.dart';
 import './login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -73,7 +74,12 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()));
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white70),
                       minimumSize: const Size(double.infinity, 56),

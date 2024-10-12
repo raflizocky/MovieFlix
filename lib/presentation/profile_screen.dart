@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './register_screen.dart';
+import 'package:flutter_movie_app/presentation/welcome_screen.dart';
 import './favorite_movie_screen.dart';
 import './watchlist_movie_screen.dart';
+import '../movie_data_manager.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -45,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          user?.email ?? 'No email',
+                          user?.email ?? 'Guest',
                           style: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 16,
@@ -83,10 +84,11 @@ class ProfileScreen extends StatelessWidget {
               // Logout button
               ElevatedButton(
                 onPressed: () async {
+                  await MovieDataManager.handleUserLogout();
                   await FirebaseAuth.instance.signOut();
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const RegisterScreen(),
+                      builder: (context) => const WelcomeScreen(),
                     ),
                   );
                 },

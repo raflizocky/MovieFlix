@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import '../movie_data_manager.dart';
+import 'movie_detail_screen.dart';
 
 const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -23,12 +25,11 @@ class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
   }
 
   Future<void> loadFavoriteMovies() async {
-    final prefs = await SharedPreferences.getInstance();
-    final favorites = prefs.getStringList('favorites') ?? [];
+    final favorites = await MovieDataManager.getFavorites();
 
     List<Map<String, dynamic>> loadedMovies = [];
-    for (String movieId in favorites) {
-      final movieDetails = await fetchMovieDetails(int.parse(movieId));
+    for (int movieId in favorites) {
+      final movieDetails = await fetchMovieDetails(movieId);
       if (movieDetails != null) {
         loadedMovies.add(movieDetails);
       }
@@ -88,69 +89,98 @@ class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                       itemCount: favoriteMovies.length,
                       itemBuilder: (context, index) {
                         final movie = favoriteMovies[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
-                                  width: 100,
-                                  height: 150,
-                                  fit: BoxFit.cover,
-                                ),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    MovieDetailScreen(movieId: movie['id']),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      movie['title'],
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.star,
-                                            color: Colors.yellow, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${movie['vote_average']}',
-                                          style: const TextStyle(
-                                              color: Colors.white),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: FutureBuilder<File?>(
+                                    future: MovieDataManager.getLocalImage(
+                                        movie['id']),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.done &&
+                                          snapshot.data != null) {
+                                        return Image.file(
+                                          snapshot.data!,
+                                          width: 100,
+                                          height: 150,
+                                          fit: BoxFit.cover,
+                                        );
+                                      } else {
+                                        return Image.network(
+                                          'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
+                                          width: 100,
+                                          height: 150,
+                                          fit: BoxFit.cover,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        movie['title'],
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${movie['genres']?.first['name'] ?? 'N/A'}',
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      movie['release_date'] ?? 'Unknown date',
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '${movie['runtime']} minutes',
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.star,
+                                              color: Colors.yellow, size: 16),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${movie['vote_average']}',
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${movie['genres']?.first['name'] ?? 'N/A'}',
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        movie['release_date'] ?? 'Unknown date',
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${movie['runtime']} minutes',
+                                        style:
+                                            const TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },

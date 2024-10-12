@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../movie_data_manager.dart';
 
 const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -56,51 +56,37 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
   }
 
   Future<void> checkFavoriteStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final favorites = prefs.getStringList('favorites') ?? [];
+    bool favorite = await MovieDataManager.isFavorite(widget.movieId);
     setState(() {
-      isFavorite = favorites.contains(widget.movieId.toString());
+      isFavorite = favorite;
+    });
+  }
+
+  Future<void> checkWatchlistStatus() async {
+    bool watchlist = await MovieDataManager.isWatchlist(widget.movieId);
+    setState(() {
+      isWatchlist = watchlist;
     });
   }
 
   Future<void> toggleFavorite() async {
-    final prefs = await SharedPreferences.getInstance();
-    final favorites = prefs.getStringList('favorites') ?? [];
-
-    setState(() {
-      if (isFavorite) {
-        favorites.remove(widget.movieId.toString());
-      } else {
-        favorites.add(widget.movieId.toString());
-      }
-      isFavorite = !isFavorite;
-    });
-
-    await prefs.setStringList('favorites', favorites);
-  }
-
-  Future<void> checkWatchlistStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final watchlist = prefs.getStringList('watchlist') ?? [];
-    setState(() {
-      isWatchlist = watchlist.contains(widget.movieId.toString());
-    });
+    final posterPath = movieDetails['poster_path'];
+    if (posterPath != null) {
+      await MovieDataManager.toggleFavorite(widget.movieId, posterPath);
+      checkFavoriteStatus();
+    } else {
+      await MovieDataManager.toggleFavorite(widget.movieId, '');
+    }
   }
 
   Future<void> toggleWatchlist() async {
-    final prefs = await SharedPreferences.getInstance();
-    final watchlist = prefs.getStringList('watchlist') ?? [];
-
-    setState(() {
-      if (isWatchlist) {
-        watchlist.remove(widget.movieId.toString());
-      } else {
-        watchlist.add(widget.movieId.toString());
-      }
-      isWatchlist = !isWatchlist;
-    });
-
-    await prefs.setStringList('watchlist', watchlist);
+    final posterPath = movieDetails['poster_path'];
+    if (posterPath != null) {
+      await MovieDataManager.toggleWatchlist(widget.movieId, posterPath);
+      checkWatchlistStatus();
+    } else {
+      await MovieDataManager.toggleWatchlist(widget.movieId, '');
+    }
   }
 
   @override

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import '../movie_data_manager.dart';
+import 'movie_detail_screen.dart';
 
 const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -23,12 +25,11 @@ class WatchlistMoviesScreenState extends State<WatchlistMoviesScreen> {
   }
 
   Future<void> loadWatchlistMovies() async {
-    final prefs = await SharedPreferences.getInstance();
-    final watchlist = prefs.getStringList('watchlist') ?? [];
+    final watchlist = await MovieDataManager.getWatchlist();
 
     List<Map<String, dynamic>> loadedMovies = [];
-    for (String movieId in watchlist) {
-      final movieDetails = await fetchMovieDetails(int.parse(movieId));
+    for (int movieId in watchlist) {
+      final movieDetails = await fetchMovieDetails(movieId);
       if (movieDetails != null) {
         loadedMovies.add(movieDetails);
       }
@@ -104,74 +105,104 @@ class WatchlistMoviesScreenState extends State<WatchlistMoviesScreen> {
                       itemCount: watchlistMovies.length,
                       itemBuilder: (context, index) {
                         final movie = watchlistMovies[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
-                                  width: 100,
-                                  height: 150,
-                                  fit: BoxFit.cover,
-                                ),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    MovieDetailScreen(movieId: movie['id']),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      movie['title'],
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: FutureBuilder<File?>(
+                                    future: MovieDataManager.getLocalImage(
+                                        movie['id']),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.done &&
+                                          snapshot.data != null) {
+                                        return Image.file(
+                                          snapshot.data!,
+                                          width: 100,
+                                          height: 150,
+                                          fit: BoxFit.cover,
+                                        );
+                                      } else {
+                                        return Image.network(
+                                          'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
+                                          width: 100,
+                                          height: 150,
+                                          fit: BoxFit.cover,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        movie['title'],
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.access_time,
-                                            color: Colors.blue, size: 16),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${movie['runtime']} min',
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      movie['overview'],
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          color: Colors.grey[400],
-                                          fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.calendar_today,
-                                            color: Colors.grey[400], size: 14),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          movie['release_date'] ?? 'TBA',
-                                          style: TextStyle(
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.access_time,
+                                              color: Colors.blue, size: 16),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '${movie['runtime']} min',
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        movie['overview'],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            color: Colors.grey[400],
+                                            fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.calendar_today,
                                               color: Colors.grey[400],
-                                              fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                              size: 14),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            movie['release_date'] ?? 'TBA',
+                                            style: TextStyle(
+                                                color: Colors.grey[400],
+                                                fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       },
