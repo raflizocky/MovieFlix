@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './register_screen.dart';
+import './favorite_movie_screen.dart';
+import './watchlist_movie_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
@@ -59,14 +61,22 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.favorite,
                 title: 'Favorite',
                 onTap: () {
-                  // Handle favorite tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FavoriteMoviesScreen()),
+                  );
                 },
               ),
               _buildMenuItem(
                 icon: Icons.movie,
                 title: 'Watchlist',
                 onTap: () {
-                  // Handle watchlist tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WatchlistMoviesScreen()),
+                  );
                 },
               ),
               const Spacer(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -18,12 +19,16 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
   Map<String, dynamic> movieDetails = {};
   List<dynamic> similarMovies = [];
   bool isAboutMovie = true;
+  bool isFavorite = false;
+  bool isWatchlist = false;
 
   @override
   void initState() {
     super.initState();
     fetchMovieDetails();
     fetchSimilarMovies();
+    checkFavoriteStatus();
+    checkWatchlistStatus();
   }
 
   Future<void> fetchMovieDetails() async {
@@ -50,6 +55,54 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
     }
   }
 
+  Future<void> checkFavoriteStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favorites = prefs.getStringList('favorites') ?? [];
+    setState(() {
+      isFavorite = favorites.contains(widget.movieId.toString());
+    });
+  }
+
+  Future<void> toggleFavorite() async {
+    final prefs = await SharedPreferences.getInstance();
+    final favorites = prefs.getStringList('favorites') ?? [];
+
+    setState(() {
+      if (isFavorite) {
+        favorites.remove(widget.movieId.toString());
+      } else {
+        favorites.add(widget.movieId.toString());
+      }
+      isFavorite = !isFavorite;
+    });
+
+    await prefs.setStringList('favorites', favorites);
+  }
+
+  Future<void> checkWatchlistStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final watchlist = prefs.getStringList('watchlist') ?? [];
+    setState(() {
+      isWatchlist = watchlist.contains(widget.movieId.toString());
+    });
+  }
+
+  Future<void> toggleWatchlist() async {
+    final prefs = await SharedPreferences.getInstance();
+    final watchlist = prefs.getStringList('watchlist') ?? [];
+
+    setState(() {
+      if (isWatchlist) {
+        watchlist.remove(widget.movieId.toString());
+      } else {
+        watchlist.add(widget.movieId.toString());
+      }
+      isWatchlist = !isWatchlist;
+    });
+
+    await prefs.setStringList('watchlist', watchlist);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,12 +124,18 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.white),
-            onPressed: () {},
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: Colors.white,
+            ),
+            onPressed: toggleFavorite,
           ),
           IconButton(
-            icon: const Icon(Icons.bookmark_border, color: Colors.white),
-            onPressed: () {},
+            icon: Icon(
+              isWatchlist ? Icons.bookmark : Icons.bookmark_border,
+              color: Colors.white,
+            ),
+            onPressed: toggleWatchlist,
           ),
         ],
       ),
