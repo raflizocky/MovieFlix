@@ -22,14 +22,7 @@ An application that integrates with [TMDB API](https://developer.themoviedb.org/
 
 ## Demo 🎥
 
-<img src="demo-img/welcome.jpg" width="249"/> 
-<img src="demo-img/login.jpg" width="249"/> 
-<img src="demo-img/register.jpg" width="249"/> 
-<img src="demo-img/now-playing.jpg" width="249"/> 
-<img src="demo-img/popular.jpg" width="249"/> 
-<img src="demo-img/detail.jpg" width="249"/> 
-<img src="demo-img/similar.jpg" width="249"/> 
-<img src="demo-img/search.jpg" width="249"/> 
-<img src="demo-img/profile.jpg" width="249"/> 
-<img src="demo-img/favorite.jpg" width="249"/> 
-<img src="demo-img/watchlist.jpg" width="249"/>
+<img src="demo-img/welcome.jpg" width="249"/> <img src="demo-img/login.jpg" width="249"/> <img src="demo-img/register.jpg" width="249"/> 
+<img src="demo-img/now-playing.jpg" width="249"/> <img src="demo-img/popular.jpg" width="249"/> <img src="demo-img/detail.jpg" width="249"/> 
+<img src="demo-img/similar.jpg" width="249"/> <img src="demo-img/search.jpg" width="249"/> <img src="demo-img/profile.jpg" width="249"/> 
+<img src="demo-img/favorite.jpg" width="249"/> <img src="demo-img/watchlist.jpg" width="249"/>
