@@ -83,12 +83,23 @@ class ProfileScreen extends StatelessWidget {
               const Spacer(),
               // Logout button
               ElevatedButton(
-                onPressed: () async {
-                  await MovieDataManager.handleUserLogout();
-                  await FirebaseAuth.instance.signOut();
+                onPressed: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => const WelcomeScreen(),
+                      builder: (context) => FutureBuilder(
+                        future: Future.wait([
+                          MovieDataManager.handleUserLogout(),
+                          FirebaseAuth.instance.signOut(),
+                        ]),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return const WelcomeScreen();
+                          }
+                          return const Scaffold(
+                              body: Center(child: CircularProgressIndicator()));
+                        },
+                      ),
                     ),
                   );
                 },

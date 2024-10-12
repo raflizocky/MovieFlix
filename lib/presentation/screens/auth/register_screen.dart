@@ -52,25 +52,31 @@ class RegisterScreenState extends State<RegisterScreen> {
         );
 
         if (userCredential.user != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            ),
-          );
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ),
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'An error occurred during registration';
         if (e.code == 'email-already-in-use') {
           errorMessage = 'An account already exists for that email.';
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMessage)),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('An error occurred during registration')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('An error occurred during registration')),
+          );
+        }
       } finally {
         if (mounted) {
           setState(() {

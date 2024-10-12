@@ -35,8 +35,13 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
         movieDetails = details;
       });
     } catch (e) {
-      // Handle error appropriately
-      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('An error occurred during fetching movie details.')),
+        );
+      }
     }
   }
 
@@ -47,8 +52,13 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
         similarMovies = data['results'].take(2).toList();
       });
     } catch (e) {
-      // Handle error appropriately
-      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('An error occurred during fetching similar movies.')),
+        );
+      }
     }
   }
 

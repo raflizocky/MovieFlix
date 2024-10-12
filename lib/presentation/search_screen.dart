@@ -29,9 +29,12 @@ class SearchScreenState extends State<SearchScreen> {
         searchResults = data['results'];
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error searching movies: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('An error occurred during searching movies.')),
+        );
+      }
     }
   }
 

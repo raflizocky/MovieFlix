@@ -52,11 +52,13 @@ class LoginScreenState extends State<LoginScreen> {
 
         if (userCredential.user != null) {
           await MovieDataManager.handleUserLogin();
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
-          );
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'An error occurred during login';
@@ -65,13 +67,17 @@ class LoginScreenState extends State<LoginScreen> {
         } else if (e.code == 'wrong-password') {
           errorMessage = 'Wrong password provided.';
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMessage)),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An error occurred during login')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('An error occurred during login')),
+          );
+        }
       } finally {
         if (mounted) {
           setState(() {
