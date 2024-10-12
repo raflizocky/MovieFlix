@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../movie_data_manager.dart';
-
-const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
-const String baseUrl = 'https://api.themoviedb.org/3';
+import '../../../data/movie_data_manager.dart';
+import '../../../services/api_service.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final int movieId;
@@ -16,6 +12,7 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class MovieDetailScreenState extends State<MovieDetailScreen> {
+  final ApiService apiService = ApiService();
   Map<String, dynamic> movieDetails = {};
   List<dynamic> similarMovies = [];
   bool isAboutMovie = true;
@@ -32,26 +29,26 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
   }
 
   Future<void> fetchMovieDetails() async {
-    final url = Uri.parse('$baseUrl/movie/${widget.movieId}?api_key=$apiKey');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
+    try {
+      final details = await apiService.fetchMovieDetails(widget.movieId);
       setState(() {
-        movieDetails = json.decode(response.body);
+        movieDetails = details;
       });
+    } catch (e) {
+      // Handle error appropriately
+      print(e);
     }
   }
 
   Future<void> fetchSimilarMovies() async {
-    final url =
-        Uri.parse('$baseUrl/movie/${widget.movieId}/similar?api_key=$apiKey');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+    try {
+      final data = await apiService.fetchSimilarMovies(widget.movieId);
       setState(() {
         similarMovies = data['results'].take(2).toList();
       });
+    } catch (e) {
+      // Handle error appropriately
+      print(e);
     }
   }
 
@@ -71,22 +68,14 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
 
   Future<void> toggleFavorite() async {
     final posterPath = movieDetails['poster_path'];
-    if (posterPath != null) {
-      await MovieDataManager.toggleFavorite(widget.movieId, posterPath);
-      checkFavoriteStatus();
-    } else {
-      await MovieDataManager.toggleFavorite(widget.movieId, '');
-    }
+    await MovieDataManager.toggleFavorite(widget.movieId, posterPath ?? '');
+    checkFavoriteStatus();
   }
 
   Future<void> toggleWatchlist() async {
     final posterPath = movieDetails['poster_path'];
-    if (posterPath != null) {
-      await MovieDataManager.toggleWatchlist(widget.movieId, posterPath);
-      checkWatchlistStatus();
-    } else {
-      await MovieDataManager.toggleWatchlist(widget.movieId, '');
-    }
+    await MovieDataManager.toggleWatchlist(widget.movieId, posterPath ?? '');
+    checkWatchlistStatus();
   }
 
   @override

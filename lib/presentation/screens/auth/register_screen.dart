@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './register_screen.dart';
-import './home_screen.dart';
-import '../movie_data_manager.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _isLoading = false;
@@ -34,10 +32,13 @@ class LoginScreenState extends State<LoginScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
     return null;
   }
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -45,32 +46,30 @@ class LoginScreenState extends State<LoginScreen> {
 
       try {
         final UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
 
         if (userCredential.user != null) {
-          await MovieDataManager.handleUserLogin();
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
+              builder: (context) => const LoginScreen(),
             ),
           );
         }
       } on FirebaseAuthException catch (e) {
-        String errorMessage = 'An error occurred during login';
-        if (e.code == 'user-not-found') {
-          errorMessage = 'No user found for that email.';
-        } else if (e.code == 'wrong-password') {
-          errorMessage = 'Wrong password provided.';
+        String errorMessage = 'An error occurred during registration';
+        if (e.code == 'email-already-in-use') {
+          errorMessage = 'An account already exists for that email.';
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('An error occurred during login')),
+          const SnackBar(
+              content: Text('An error occurred during registration')),
         );
       } finally {
         if (mounted) {
@@ -119,7 +118,7 @@ class LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Login',
+                          'Create Account',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 32,
@@ -197,12 +196,15 @@ class LoginScreenState extends State<LoginScreen> {
                                 });
                               },
                             ),
+                            helperText:
+                                'Password must be at least 6 characters long',
+                            helperStyle: const TextStyle(color: Colors.white70),
                           ),
                           validator: _validatePassword,
                         ),
                         const SizedBox(height: 48),
                         ElevatedButton(
-                          onPressed: _isLoading ? null : _login,
+                          onPressed: _isLoading ? null : _register,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.amber,
                             minimumSize: const Size(double.infinity, 56),
@@ -214,38 +216,13 @@ class LoginScreenState extends State<LoginScreen> {
                               ? const CircularProgressIndicator(
                                   color: Colors.black)
                               : const Text(
-                                  'Login',
+                                  'Register',
                                   style: TextStyle(
                                     fontSize: 18,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "Don't have an account? ",
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RegisterScreen(),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                'Register',
-                                style: TextStyle(color: Colors.amber),
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),

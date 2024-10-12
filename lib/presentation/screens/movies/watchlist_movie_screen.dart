@@ -1,53 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:io';
-import '../movie_data_manager.dart';
+import '../../../data/movie_data_manager.dart';
+import '../../../services/api_service.dart';
 import 'movie_detail_screen.dart';
 
-const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
-const String baseUrl = 'https://api.themoviedb.org/3';
-
-class FavoriteMoviesScreen extends StatefulWidget {
-  const FavoriteMoviesScreen({super.key});
+class WatchlistMoviesScreen extends StatefulWidget {
+  const WatchlistMoviesScreen({super.key});
 
   @override
-  FavoriteMoviesScreenState createState() => FavoriteMoviesScreenState();
+  WatchlistMoviesScreenState createState() => WatchlistMoviesScreenState();
 }
 
-class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
-  List<Map<String, dynamic>> favoriteMovies = [];
+class WatchlistMoviesScreenState extends State<WatchlistMoviesScreen> {
+  List<Map<String, dynamic>> watchlistMovies = [];
+  final ApiService apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    loadFavoriteMovies();
+    loadWatchlistMovies();
   }
 
-  Future<void> loadFavoriteMovies() async {
-    final favorites = await MovieDataManager.getFavorites();
+  Future<void> loadWatchlistMovies() async {
+    final watchlist = await MovieDataManager.getWatchlist();
 
     List<Map<String, dynamic>> loadedMovies = [];
-    for (int movieId in favorites) {
-      final movieDetails = await fetchMovieDetails(movieId);
+    for (int movieId in watchlist) {
+      final movieDetails = await apiService.fetchMovieDetails(movieId);
       if (movieDetails != null) {
         loadedMovies.add(movieDetails);
       }
     }
 
     setState(() {
-      favoriteMovies = loadedMovies;
+      watchlistMovies = loadedMovies;
     });
-  }
-
-  Future<Map<String, dynamic>?> fetchMovieDetails(int movieId) async {
-    final url = Uri.parse('$baseUrl/movie/$movieId?api_key=$apiKey');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    }
-    return null;
   }
 
   @override
@@ -67,7 +54,7 @@ class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Text(
-                    'Favorite',
+                    'Watch List',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -78,17 +65,33 @@ class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
               ),
             ),
             Expanded(
-              child: favoriteMovies.isEmpty
+              child: watchlistMovies.isEmpty
                   ? const Center(
-                      child: Text(
-                        'No favorite movies yet',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.movie_outlined,
+                            color: Colors.grey,
+                            size: 48,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Your watchlist is empty',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Add movies you want to watch later',
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                          ),
+                        ],
                       ),
                     )
                   : ListView.builder(
-                      itemCount: favoriteMovies.length,
+                      itemCount: watchlistMovies.length,
                       itemBuilder: (context, index) {
-                        final movie = favoriteMovies[index];
+                        final movie = watchlistMovies[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -148,11 +151,11 @@ class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                                       const SizedBox(height: 4),
                                       Row(
                                         children: [
-                                          const Icon(Icons.star,
-                                              color: Colors.yellow, size: 16),
+                                          const Icon(Icons.access_time,
+                                              color: Colors.blue, size: 16),
                                           const SizedBox(width: 4),
                                           Text(
-                                            '${movie['vote_average']}',
+                                            '${movie['runtime']} min',
                                             style: const TextStyle(
                                                 color: Colors.white),
                                           ),
@@ -160,21 +163,27 @@ class FavoriteMoviesScreenState extends State<FavoriteMoviesScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '${movie['genres']?.first['name'] ?? 'N/A'}',
-                                        style:
-                                            const TextStyle(color: Colors.grey),
+                                        movie['overview'],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            color: Colors.grey[400],
+                                            fontSize: 14),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        movie['release_date'] ?? 'Unknown date',
-                                        style:
-                                            const TextStyle(color: Colors.grey),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${movie['runtime']} minutes',
-                                        style:
-                                            const TextStyle(color: Colors.grey),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.calendar_today,
+                                              color: Colors.grey[400],
+                                              size: 14),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            movie['release_date'] ?? 'TBA',
+                                            style: TextStyle(
+                                                color: Colors.grey[400],
+                                                fontSize: 14),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),

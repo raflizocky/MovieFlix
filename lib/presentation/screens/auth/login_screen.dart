@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import './login_screen.dart';
+import 'register_screen.dart';
+import '../../home_screen.dart';
+import '../../../data/movie_data_manager.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  RegisterScreenState createState() => RegisterScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class RegisterScreenState extends State<RegisterScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _isLoading = false;
@@ -32,13 +34,10 @@ class RegisterScreenState extends State<RegisterScreen> {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters long';
-    }
     return null;
   }
 
-  Future<void> _register() async {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -46,30 +45,32 @@ class RegisterScreenState extends State<RegisterScreen> {
 
       try {
         final UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         );
 
         if (userCredential.user != null) {
+          await MovieDataManager.handleUserLogin();
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
+              builder: (context) => const HomeScreen(),
             ),
           );
         }
       } on FirebaseAuthException catch (e) {
-        String errorMessage = 'An error occurred during registration';
-        if (e.code == 'email-already-in-use') {
-          errorMessage = 'An account already exists for that email.';
+        String errorMessage = 'An error occurred during login';
+        if (e.code == 'user-not-found') {
+          errorMessage = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Wrong password provided.';
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('An error occurred during registration')),
+          const SnackBar(content: Text('An error occurred during login')),
         );
       } finally {
         if (mounted) {
@@ -118,7 +119,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Create Account',
+                          'Login',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 32,
@@ -196,15 +197,12 @@ class RegisterScreenState extends State<RegisterScreen> {
                                 });
                               },
                             ),
-                            helperText:
-                                'Password must be at least 6 characters long',
-                            helperStyle: const TextStyle(color: Colors.white70),
                           ),
                           validator: _validatePassword,
                         ),
                         const SizedBox(height: 48),
                         ElevatedButton(
-                          onPressed: _isLoading ? null : _register,
+                          onPressed: _isLoading ? null : _login,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.amber,
                             minimumSize: const Size(double.infinity, 56),
@@ -216,13 +214,38 @@ class RegisterScreenState extends State<RegisterScreen> {
                               ? const CircularProgressIndicator(
                                   color: Colors.black)
                               : const Text(
-                                  'Register',
+                                  'Login',
                                   style: TextStyle(
                                     fontSize: 18,
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Don't have an account? ",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegisterScreen(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Register',
+                                style: TextStyle(color: Colors.amber),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

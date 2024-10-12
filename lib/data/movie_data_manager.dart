@@ -59,17 +59,14 @@ class MovieDataManager {
     }
   }
 
-  // New method to handle user login
   static Future<void> handleUserLogin() async {
     await _clearLocalData();
   }
 
-  // New method to handle user logout
   static Future<void> handleUserLogout() async {
     await _clearLocalData();
   }
 
-  // New method to clear local data
   static Future<void> _clearLocalData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('favorites');

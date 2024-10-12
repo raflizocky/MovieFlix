@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'movie_detail_screen.dart';
+import '../../services/api_service.dart';
+import '../presentation/screens/movies/movie_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final ApiService apiService;
+
+  const SearchScreen({super.key, required this.apiService});
 
   @override
   SearchScreenState createState() => SearchScreenState();
@@ -22,15 +23,15 @@ class SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    final url = Uri.parse(
-        '$baseUrl/search/movie?api_key=$apiKey&query=${Uri.encodeComponent(query)}');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+    try {
+      final data = await widget.apiService.searchMovies(query);
       setState(() {
         searchResults = data['results'];
       });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error searching movies: $e')),
+      );
     }
   }
 

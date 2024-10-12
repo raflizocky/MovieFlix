@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'movie_detail_screen.dart';
 import 'profile_screen.dart';
 import 'search_screen.dart';
-
-const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
-const String baseUrl = 'https://api.themoviedb.org/3';
+import '../../services/api_service.dart';
+import 'screens/movies/movie_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,12 +13,18 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  final ApiService _apiService = ApiService();
+  late final List<Widget> _screens;
 
-  final List<Widget> _screens = [
-    const HomeContent(),
-    const SearchScreen(),
-    ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const HomeContent(),
+      SearchScreen(apiService: _apiService),
+      ProfileScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +59,7 @@ class HomeContent extends StatefulWidget {
 }
 
 class HomeContentState extends State<HomeContent> {
+  final ApiService _apiService = ApiService();
   List<dynamic> movies = [];
   bool isNowPlaying = true;
 
@@ -67,15 +70,16 @@ class HomeContentState extends State<HomeContent> {
   }
 
   Future<void> fetchMovies() async {
-    final url = Uri.parse(
-        '$baseUrl/movie/${isNowPlaying ? 'now_playing' : 'popular'}?api_key=$apiKey');
-    final response = await http.get(url);
+    try {
+      final data = isNowPlaying
+          ? await _apiService.fetchNowPlayingMovies()
+          : await _apiService.fetchPopularMovies();
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
       setState(() {
         movies = data['results'].take(isNowPlaying ? 6 : 20).toList();
       });
+    } catch (e) {
+      const SnackBar(content: Text("Error fetching movies."));
     }
   }
 

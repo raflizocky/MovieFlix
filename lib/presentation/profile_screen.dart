@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_movie_app/presentation/welcome_screen.dart';
-import './favorite_movie_screen.dart';
-import './watchlist_movie_screen.dart';
-import '../movie_data_manager.dart';
+import 'package:flutter_movie_app/presentation/screens/auth/welcome_screen.dart';
+import 'screens/movies/favorite_movie_screen.dart';
+import 'screens/movies/watchlist_movie_screen.dart';
+import '../data/movie_data_manager.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
