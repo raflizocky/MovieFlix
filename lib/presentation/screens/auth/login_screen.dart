@@ -4,7 +4,12 @@ import 'register_screen.dart';
 import '../../home_screen.dart';
 import '../../../data/movie_data_manager.dart';
 
+/// A screen widget that handles user login functionality.
+///
+/// This widget provides a form for users to enter their email and password,
+/// validates the input, and attempts to log in using Firebase Authentication.
 class LoginScreen extends StatefulWidget {
+  /// Creates a login screen.
   const LoginScreen({super.key});
 
   @override
@@ -18,8 +23,13 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  /// Regular expression for validating email addresses.
   final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
+  /// Validates the email input.
+  ///
+  /// Returns an error message if the email is empty or invalid,
+  /// otherwise returns null.
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
@@ -30,6 +40,10 @@ class LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
+  /// Validates the password input.
+  ///
+  /// Returns an error message if the password is empty,
+  /// otherwise returns null.
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
@@ -37,6 +51,10 @@ class LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
+  /// Attempts to log in the user with the provided credentials.
+  ///
+  /// If successful, navigates to the home screen. Otherwise,
+  /// displays an error message.
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       setState(() {

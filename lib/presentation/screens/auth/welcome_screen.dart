@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movie_app/presentation/home_screen.dart';
 import 'login_screen.dart';
 
+/// A screen widget that serves as the initial welcome screen for the app.
+///
+/// This widget provides options for the user to log in or continue as a guest.
 class WelcomeScreen extends StatelessWidget {
+  /// Creates a welcome screen.
   const WelcomeScreen({super.key});
 
   @override

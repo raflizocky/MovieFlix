@@ -5,7 +5,10 @@ import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Default [FirebaseOptions] for use with your Firebase apps.
+/// Provides default [FirebaseOptions] for different platforms.
+///
+/// This class offers a convenient way to access Firebase configuration
+/// options for various platforms (Web, Android, iOS, macOS, Windows).
 ///
 /// Example:
 /// ```dart
@@ -16,6 +19,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// );
 /// ```
 class DefaultFirebaseOptions {
+  /// Returns the [FirebaseOptions] for the current platform.
+  ///
+  /// This getter automatically selects the appropriate Firebase options
+  /// based on the platform the app is running on (Web, Android, iOS, etc.).
+  ///
+  /// Throws an [UnsupportedError] if the current platform is not supported.
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -41,6 +50,7 @@ class DefaultFirebaseOptions {
     }
   }
 
+  /// Firebase configuration options for Web platform.
   static FirebaseOptions web = FirebaseOptions(
     apiKey: dotenv.env['WEB_API_KEY']!,
     appId: dotenv.env['WEB_APP_ID']!,
@@ -51,6 +61,7 @@ class DefaultFirebaseOptions {
     measurementId: dotenv.env['WEB_MEASUREMENT_ID']!,
   );
 
+  /// Firebase configuration options for Android platform.
   static FirebaseOptions android = FirebaseOptions(
     apiKey: dotenv.env['ANDROID_API_KEY']!,
     appId: dotenv.env['ANDROID_APP_ID']!,
@@ -59,6 +70,7 @@ class DefaultFirebaseOptions {
     storageBucket: dotenv.env['ANDROID_STORAGE_BUCKET']!,
   );
 
+  /// Firebase configuration options for iOS platform.
   static FirebaseOptions ios = FirebaseOptions(
     apiKey: dotenv.env['IOS_API_KEY']!,
     appId: dotenv.env['IOS_APP_ID']!,
@@ -68,6 +80,7 @@ class DefaultFirebaseOptions {
     iosBundleId: dotenv.env['IOS_BUNDLE_ID']!,
   );
 
+  /// Firebase configuration options for macOS platform.
   static FirebaseOptions macos = FirebaseOptions(
     apiKey: dotenv.env['MACOS_API_KEY']!,
     appId: dotenv.env['MACOS_APP_ID']!,
@@ -77,6 +90,7 @@ class DefaultFirebaseOptions {
     iosBundleId: dotenv.env['MACOS_BUNDLE_ID']!,
   );
 
+  /// Firebase configuration options for Windows platform.
   static FirebaseOptions windows = FirebaseOptions(
     apiKey: dotenv.env['WINDOWS_API_KEY']!,
     appId: dotenv.env['WINDOWS_APP_ID']!,

@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_screen.dart';
 
+/// A screen widget that handles user registration functionality.
+///
+/// This widget provides a form for users to enter their email and password,
+/// validates the input, and attempts to register a new user using Firebase Authentication.
 class RegisterScreen extends StatefulWidget {
+  /// Creates a registration screen.
   const RegisterScreen({super.key});
 
   @override
@@ -16,8 +21,13 @@ class RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  /// Regular expression for validating email addresses.
   final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
+  /// Validates the email input.
+  ///
+  /// Returns an error message if the email is empty or invalid,
+  /// otherwise returns null.
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
@@ -28,6 +38,10 @@ class RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+  /// Validates the password input.
+  ///
+  /// Returns an error message if the password is empty or too short,
+  /// otherwise returns null.
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
@@ -38,6 +52,10 @@ class RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+  /// Attempts to register a new user with the provided credentials.
+  ///
+  /// If successful, navigates to the login screen. Otherwise,
+  /// displays an error message.
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
