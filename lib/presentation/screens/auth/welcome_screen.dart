@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_movie_app/presentation/home_screen.dart';
+import 'package:movie_flix/presentation/home_screen.dart';
 import 'login_screen.dart';
 
 /// A screen widget that serves as the initial welcome screen for the app.

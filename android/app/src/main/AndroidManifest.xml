@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="flutter_movie_app"
+        android:label="movie_flix"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

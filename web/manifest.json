@@ -1,6 +1,6 @@
 {
-    "name": "flutter_movie_app",
-    "short_name": "flutter_movie_app",
+    "name": "movie_flix",
+    "short_name": "movie_flix",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

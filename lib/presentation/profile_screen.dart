@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_movie_app/presentation/screens/auth/welcome_screen.dart';
+import 'package:movie_flix/presentation/screens/auth/welcome_screen.dart';
 import 'screens/movies/favorite_movie_screen.dart';
 import 'screens/movies/watchlist_movie_screen.dart';
 import '../data/movie_data_manager.dart';
