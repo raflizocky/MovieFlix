@@ -43,8 +43,11 @@ class SearchScreenState extends State<SearchScreen> {
     }
 
     try {
-      // Fetch movie data using the ApiService.
-      final data = await widget.apiService.searchMovies(query);
+      // Fetch movie data using the ApiService with the correct endpoint and query parameter.
+      final data = await widget.apiService.searchMovies(
+        '/search/movie',
+        queryParams: {'query': query},
+      );
       setState(() {
         searchResults = data['results'];
       });
