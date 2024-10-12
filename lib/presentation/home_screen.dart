@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'movie_detail_screen.dart';
 import 'profile_screen.dart';
+import 'search_screen.dart';
 
 const String apiKey = '3b0f6422b6bf1291ffc719ebae8e9435';
 const String baseUrl = 'https://api.themoviedb.org/3';
@@ -15,12 +16,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  List<dynamic> movies = [];
-  bool isNowPlaying = true;
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
     const HomeContent(),
+    const SearchScreen(),
     ProfileScreen(),
   ];
 
