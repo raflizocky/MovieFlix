@@ -286,56 +286,67 @@ class MovieDetailScreenState extends State<MovieDetailScreen> {
   }
 
   Widget _buildSimilarMovieItem(Map<String, dynamic> movie) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              'https://image.tmdb.org/t/p/w200${movie['poster_path']}',
-              height: 120,
-              width: 80,
-              fit: BoxFit.cover,
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MovieDetailScreen(movieId: movie['id']),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  movie['title'] ?? '',
-                  style: const TextStyle(
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                'https://image.tmdb.org/t/p/w200${movie['poster_path']}',
+                height: 120,
+                width: 80,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    movie['title'] ?? '',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.yellow, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${movie['vote_average']?.toStringAsFixed(1) ?? ''}',
-                      style: const TextStyle(color: Colors.white),
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${movie['release_date']?.split('-')[0] ?? ''} • Action',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${movie['runtime'] ?? 139} minutes',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, color: Colors.yellow, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${movie['vote_average']?.toStringAsFixed(1) ?? ''}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${movie['release_date']?.split('-')[0] ?? ''} • Action',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${movie['runtime'] ?? 139} minutes',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
