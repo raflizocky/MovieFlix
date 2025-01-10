@@ -1,12 +1,6 @@
-# Movie Flix 🎬
-
-**Movie Flix** is a mobile app for browsing world wide movies.
-
-## Test
-
-- Android ✅
-
 ## Demo
+
+> Tested on: Android.
 
 ### Guest
 <video src="https://github.com/user-attachments/assets/7ffde36d-9aa8-4c15-8638-4cb046698283"></video>
@@ -20,16 +14,19 @@
 - Movies: Now Playing, Popular, Similar, Detail, Search
 - Profile: Favorite & Watchlist Movies
 
+## Pre-requisites
+
+- Flutter SDK
+
 ## Download
 
-- Updated at: 2024-12-13
 - Download: [APK](https://github.com/raflizocky/MovieFlix/releases/download/v1.0.0/app-release.apk)
 
 ## Resources Used
 
 - API: [TMDB API](https://www.themoviedb.org/settings/api)
 - Code documentation: [Dart documentation](https://dart.dev/effective-dart/documentation)
-- Firebase: Auth (email/password), Firestore (test mode)
+- Firebase: Auth (email/password), Firestore
 
 ## Building
 
@@ -87,26 +84,14 @@
 
 6. Choose android platform.
 
+## Contributing
+
+If you encounter any issues or would like to contribute to the project, feel free to:
+
+-   Report any [issues](https://github.com/raflizocky/MovieFlix/issues)
+-   Submit a [pull request](https://github.com/raflizocky/MovieFlix/pulls)
+-   Participate in [discussions](https://github.com/raflizocky/MovieFlix/discussions) for any questions, feedback, or suggestions
+
 ## License
 
-```
-Copyright (c) 2024 Rafli Zocky Leonard
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+Code released under the [MIT License](https://github.com/raflizocky/MovieFlix/blob/master/LICENSE).
